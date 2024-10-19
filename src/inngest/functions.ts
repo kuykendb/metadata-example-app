@@ -57,7 +57,8 @@ export const addMapping = inngest.createFunction(
         // Reduce randomness for consistent JSON responses
         temperature: 0,
       });
-      const result = JSON.parse(completion.choices[0].message.content);
+      // TODO: better validate data and handle errors
+      const result = JSON.parse(completion.choices[0].message.content as string);
 
       // Insert the pending record into the database
       const status = result.ask ? "ask-for-input" : "pending";
