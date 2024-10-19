@@ -16,7 +16,7 @@ export const addMapping = inngest.createFunction(
     // if we need to ask the user for confirmation.
     const result = await step.run("map-value-to-target", async () => {
       const systemPrompt = `
-      You are a helpful bot that helps users map metadata values for EPM systems
+        You are a helpful bot that helps users map metadata values for EPM systems
         to target values in other systems. You'll be given existing mappings and a source
         value and asked to map the source value to a target given the patterns in the existing
         mappings.
@@ -62,7 +62,10 @@ export const addMapping = inngest.createFunction(
 
       // Insert the pending record into the database
       const status = result.ask ? "ask-for-input" : "pending";
-      await sql`INSERT INTO Mappings (description, source, status, mapping_id) VALUES (${description}, ${source}, ${status}, ${mappingId});`;
+      await sql`
+        INSERT INTO Mappings (description, source, status, mapping_id)
+        VALUES (${description}, ${source}, ${status}, ${mappingId});
+      `;
 
       // TODO: would probably need to check the result to see if this needs to be retried?
       return result;
@@ -81,7 +84,7 @@ export const addMapping = inngest.createFunction(
       const userInput = await step.waitForEvent("wait-for-user-input", {
         event: "app/mapping.update",
         timeout: "1d",
-        if: "event.data.mappingId == async.data.mappingId",
+        match: "data.mappingId",
       });
       if (!userInput) {
         throw new Error("No user input");
@@ -91,13 +94,15 @@ export const addMapping = inngest.createFunction(
     }
 
     if (!target) {
-      // Shouldn't happen
       throw new Error("No target");
     }
 
     // Add mapping to db and update status
     await step.run("add-target-to-db", async () => {
-      await sql`UPDATE Mappings SET target=${target}, status=${didAutoMap ? 'auto-mapped' : 'user-mapped'} WHERE mapping_id=${mappingId};`;
+      await sql`
+        UPDATE Mappings SET target=${target}, status=${didAutoMap ? 'auto-mapped' : 'user-mapped'}
+        WHERE mapping_id=${mappingId};
+      `;
     });
 
     // What happens to this return value?
