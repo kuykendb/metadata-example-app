@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "@/context";
-import { Modal, Box, TextField, Button, Typography } from "@mui/material";
+import { Modal, Box, TextField, Typography } from "@mui/material";
 import { updateMapping } from "@/api";
 import LoadingButton from '@mui/lab/LoadingButton';
 
