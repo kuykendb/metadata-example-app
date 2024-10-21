@@ -4,16 +4,15 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "@/context";
 import { Modal, Box, TextField, Typography } from "@mui/material";
-import { addMapping } from "@/api";
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
@@ -25,16 +24,15 @@ type FormInputs = {
 };
 
 export function AddMappingModal({ open, onClose }: { open: boolean, onClose: () => void }) {
-  const { refreshMappings } = useAppContext();
-  const { register, handleSubmit, reset } = useForm<FormInputs>();
+  const { addMapping } = useAppContext();
+  const { register, handleSubmit, reset, } = useForm<FormInputs>();
   const [loading, setLoading] = useState(false);
   async function onSubmit(data: FormInputs) {
     setLoading(true);
     await addMapping(data.description, data.source);
-    refreshMappings();
     onClose();
-    reset();
     setLoading(false);
+    reset();
   };
 
   return (

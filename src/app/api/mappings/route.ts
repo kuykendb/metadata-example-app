@@ -1,47 +1,33 @@
-import { sql } from "@vercel/postgres";
 import { v4 as uuid } from "uuid";
 import { inngest } from "@/inngest/client";
+import { ADD_MAPPING_EVENT } from "@/inngest/functions";
+import { getMappings } from "@/data";
 
 export const revalidate = 0;
+
 export async function GET() {
-  const { rows } = await sql`SELECT * FROM Mappings ORDER BY id DESC;`;
-  return Response.json({ mappings: rows });
+  // Sort them by id so the newest ones are at the top so the user can
+  // see any mappings they need to update.
+  return Response.json({ mappings: await getMappings() });
 }
 
 export async function POST(req: Request) {
-  const data = await req.json();
-  console.log("Adding mapping", data);
-  const { description, source } = data;
+  const { description, source } = await req.json();
   if (!description || !source) {
-    throw new Error("Missing description or source");
+    return Response.json({ error: "Missing required input" }, { status: 400 });
   }
 
-  console.log("Adding mapping", description, source);
+  console.log("Sending add mapping event", description, source);
   const mappingId: string = uuid();
 
   await inngest.send({
-    name: "app/mapping.add",
+    name: ADD_MAPPING_EVENT,
     data: {
       mappingId,
       description,
       source,
     },
   });
-
-  // Poll database until the mapping has been added. A websocket to notify the frontend would be nicer,
-  // but this works for a demo.
-  let attempts = 0;
-  while (attempts < 30) {
-    const { rows } = await sql`
-      SELECT * FROM Mappings WHERE mapping_id = ${mappingId} 
-      AND status IN ('ask-for-input', 'user-mapped', 'auto-mapped');
-    `;
-    if (rows.length > 0) {
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    attempts++;
-  }
 
   return Response.json({ mappingId });
 }

@@ -1,10 +1,8 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
-import { addMapping } from "@/inngest/functions";
+import { newMappingWorkflow } from "@/inngest/functions";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [
-    addMapping,
-  ],
+  functions: [newMappingWorkflow],
 });

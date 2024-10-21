@@ -1,6 +1,7 @@
 "use server";
-import { sql } from "@vercel/postgres";
+import { deleteMapping as _deleteMapping } from "@/data";
 
+// Why not try a server action? Kinda neat.
 export async function deleteMapping(id: string) {
-  await sql`DELETE FROM Mappings WHERE id = ${id};`;
+  await _deleteMapping(id);
 }

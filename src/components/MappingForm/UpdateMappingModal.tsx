@@ -4,16 +4,15 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "@/context";
 import { Modal, Box, TextField, Typography } from "@mui/material";
-import { updateMapping } from "@/api";
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
@@ -24,15 +23,15 @@ type FormInputs = {
 };
 
 export function UpdateMappingModal({ onClose, mappingId }: { mappingId: string | undefined, onClose: () => void }) {
-  const { refreshMappings } = useAppContext();
   const { register, handleSubmit, reset } = useForm<FormInputs>();
+  const { updateMapping } = useAppContext();
   const [loading, setLoading] = React.useState(false);
   async function onSubmit(data: FormInputs) {
     if (mappingId === undefined) {
       return;
     }
+    setLoading(true);
     await updateMapping(mappingId, data.target);
-    refreshMappings();
     onClose();
     setLoading(false);
     reset();
@@ -55,7 +54,7 @@ export function UpdateMappingModal({ onClose, mappingId }: { mappingId: string |
             fullWidth
             margin="normal"
             size="small"
-            {...register("target", {required: true})}
+            {...register("target", { required: true })}
           />
           <LoadingButton loading={loading} type="submit" variant="contained" sx={{ mt: 2 }} fullWidth>
             Submit

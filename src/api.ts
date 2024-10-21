@@ -46,3 +46,21 @@ export async function updateMapping(mappingId: string, target: string): Promise<
     throw new Error(`Request failed with status ${response.status}`);
   }
 }
+
+export async function getMapping(mappingId: string): Promise<MetadataMapping | undefined> {
+  const response = await fetch(`/api/mappings/${mappingId}`, {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      return undefined;
+    }
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+  const data = await response.json();
+  if (!data || !data.mapping) {
+    throw new Error("Error fetching mapping", data);
+  }
+  return await data.mapping as MetadataMapping;
+}
