@@ -36,7 +36,7 @@ export const newMappingWorkflow = inngest.createFunction(
 
       // TODO: these are not idempotent as written. In a real env we'd need to
       // check the openai response, make sure the db has appropriate uniqueness constraints,
-      // maybe generate the mappingId here, etc to appropriately allow retries.
+      // etc to appropriately allow retries.
       await addMapping(description, source, status, mappingId);
       return response;
     });
